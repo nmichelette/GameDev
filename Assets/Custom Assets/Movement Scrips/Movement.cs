@@ -25,13 +25,37 @@ public class Movement : MonoBehaviour
     void Update()
     {
         //checks if the x velocity is within certain parameters
-        if (playerRB.velocity.x < maxSpeed && playerRB.velocity.x > -maxSpeed)
+        float dir = Input.GetAxis("Horizontal");
+        if (dir == 0)
         {
-            movement = new Vector2(Input.GetAxis("Horizontal"), 0f); //gives direction     
+            float vx = playerRB.velocity.x;
+            if (vx < 1 && vx > -1)
+            {
+                playerRB.velocity = new Vector2(0f, playerRB.velocity.y);
+            }
+            else
+            {
+                if (vx > 0)
+                {
+                    movement = new Vector2(-1f, 0f);
+                }
+                else if (vx < 0)
+                {
+                    movement = new Vector2(1f, 0f);
+                }
+            }
+            
         }
         else
         {
-            movement = new Vector2(0f, 0f);
+            if (playerRB.velocity.x < maxSpeed && playerRB.velocity.x > -maxSpeed)
+            {
+                movement = new Vector2(dir, 0f); //gives direction     
+            }
+            else
+            {
+                playerRB.velocity = new Vector2(12f * dir, playerRB.velocity.y);
+            }
         }
 
         //hold jump to go further
@@ -65,9 +89,7 @@ public class Movement : MonoBehaviour
 
     void moveCharacter(Vector2 direction)
     {
-        
          playerRB.AddForce(direction * moveSpeed);
-        
     }
 
     void Jump()
