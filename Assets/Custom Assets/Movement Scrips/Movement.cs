@@ -16,6 +16,7 @@ public class Movement : MonoBehaviour
     public float fallM = 2.5f;
     public float lowJumpM = 7.5f;
 
+
     void Start()
     {
         playerRB = GetComponent<Rigidbody2D>();
@@ -24,37 +25,33 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //checks if the x velocity is within certain parameters
         float dir = Input.GetAxis("Horizontal");
-        if (dir == 0)
+        //checks if the x velocity is within certain parameters
+        if (!Input.GetButton("Horizontal"))
         {
             float vx = playerRB.velocity.x;
-            if (vx < 1 && vx > -1)
-            {
-                playerRB.velocity = new Vector2(0f, playerRB.velocity.y);
-            }
+
+            movement = new Vector2(0f, 0f);
+
+            if ((vx < 1 && vx > 0) || (vx > -1 && vx < 0))
+                playerRB.velocity = new Vector2(0, playerRB.velocity.y);
             else
             {
-                if (vx > 0)
-                {
-                    movement = new Vector2(-1f, 0f);
-                }
-                else if (vx < 0)
-                {
-                    movement = new Vector2(1f, 0f);
-                }
+                playerRB.velocity = new Vector2(vx * .9f, playerRB.velocity.y);
+                
             }
-            
+                
         }
         else
         {
+            
             if (playerRB.velocity.x < maxSpeed && playerRB.velocity.x > -maxSpeed)
             {
                 movement = new Vector2(dir, 0f); //gives direction     
             }
             else
             {
-                playerRB.velocity = new Vector2(12f * dir, playerRB.velocity.y);
+                playerRB.velocity = new Vector2(maxSpeed * dir, playerRB.velocity.y);
             }
         }
 
