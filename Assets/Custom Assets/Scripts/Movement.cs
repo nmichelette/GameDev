@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,8 @@ public class Movement : MonoBehaviour
     public float jumpVelocity;
     public float fallM = 2.5f;
     public float lowJumpM = 7.5f;
+
+    private bool FacingRight = true;
 
 
     void Start()
@@ -54,6 +57,11 @@ public class Movement : MonoBehaviour
             {
                 playerRB.velocity = new Vector2(maxSpeed * dir, playerRB.velocity.y);
             }
+            if (dir > 0 && !FacingRight) //going right
+                flip();
+            else if (dir < 0 && FacingRight)
+                flip();
+
         }
 
         //hold jump to go further
@@ -68,7 +76,10 @@ public class Movement : MonoBehaviour
                 playerRB.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpM - 1) * Time.deltaTime;
             }
         }
-   
+
+        var direction = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        var angle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
     void FixedUpdate()
@@ -82,8 +93,11 @@ public class Movement : MonoBehaviour
         }
     }
 
-
-
+    void flip()
+    {
+        FacingRight = !FacingRight;
+        transform.Rotate(0f, 180f, 0f);
+    }
 
     void moveCharacter(Vector2 direction)
     {
