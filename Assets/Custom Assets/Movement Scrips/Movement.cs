@@ -29,6 +29,7 @@ public class Movement : MonoBehaviour
         //checks if the x velocity is within certain parameters
         if (!Input.GetButton("Horizontal"))
         {
+            //decelerating
             float vx = playerRB.velocity.x;
 
             movement = new Vector2(0f, 0f);
@@ -44,7 +45,7 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            
+            //accelerating
             if (playerRB.velocity.x < maxSpeed && playerRB.velocity.x > -maxSpeed)
             {
                 movement = new Vector2(dir, 0f); //gives direction     
