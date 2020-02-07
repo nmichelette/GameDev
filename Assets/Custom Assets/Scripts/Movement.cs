@@ -11,7 +11,7 @@ public class Movement : MonoBehaviour
     public float maxSpeed = 12f;
 
     //jump variables
-    [Range(1,10)]
+    [Range(1,20)]
     public float jumpVelocity;
     public float fallM = 2.5f;
     public float lowJumpM = 7.5f;
