@@ -7,6 +7,7 @@ public class Movement : MonoBehaviour
 {
 
     public Rigidbody2D playerRB;
+    public Transform aimingPivot;
     public Vector2 movement;
     public float moveSpeed = 20f;
     public float maxSpeed = 12f;
@@ -57,10 +58,10 @@ public class Movement : MonoBehaviour
             {
                 playerRB.velocity = new Vector2(maxSpeed * dir, playerRB.velocity.y);
             }
-            if (dir > 0 && !FacingRight) //going right
+           /* if (dir > 0 && !FacingRight) //going right
                 flip();
             else if (dir < 0 && FacingRight)
-                flip();
+                flip(); */
 
         }
 
@@ -77,9 +78,7 @@ public class Movement : MonoBehaviour
             }
         }
 
-        var direction = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        var angle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        
     }
 
     void FixedUpdate()
@@ -91,6 +90,25 @@ public class Movement : MonoBehaviour
         {
             Jump();
         }
+
+        //Control Aiming
+        Vector3 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - aimingPivot.transform.position;
+        direction.Normalize();
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 80f;
+        Debug.Log("Angle:" + angle);
+        if ((angle > 181f || angle < -1) && FacingRight)
+        {
+            flip();
+        }
+        else if ((angle < 179f && angle > 1) && !FacingRight)
+        {
+            flip();
+        }
+        if(FacingRight)
+            aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        else
+            aimingPivot.transform.rotation = Quaternion.Euler(0f, 180f, -angle - 20f);
+
     }
 
     void flip()
