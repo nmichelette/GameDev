@@ -5,8 +5,8 @@ using UnityEngine;
 public class Shoot : MonoBehaviour
 {
     public Transform FirePoint;
-    public GameObject projectile;
-
+    public Bullet projectile;
+    public double damage = 5;
 
     // Update is called once per frame
     void Update()
@@ -18,7 +18,8 @@ public class Shoot : MonoBehaviour
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            Instantiate(projectile,FirePoint.position,FirePoint.rotation);
+            Bullet boolet =  Instantiate(projectile,FirePoint.position,FirePoint.rotation);
+            boolet.damage = damage;
         }
     }
 }
