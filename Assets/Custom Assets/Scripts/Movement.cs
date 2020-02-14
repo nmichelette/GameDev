@@ -95,12 +95,12 @@ public class Movement : MonoBehaviour
         Vector3 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - aimingPivot.transform.position;
         direction.Normalize();
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 80f;
-        Debug.Log("Angle:" + angle);
-        if ((angle > 181f || angle < -1) && FacingRight)
+        //Debug.Log("Angle:" + angle);
+        if ((angle > 182f || angle < -1) && FacingRight)
         {
             flip();
         }
-        else if ((angle < 179f && angle > 1) && !FacingRight)
+        else if ((angle < 178f && angle > 1) && !FacingRight)
         {
             flip();
         }
