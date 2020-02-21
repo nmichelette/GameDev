@@ -3,14 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement : MonoBehaviour
+public class PlayerControls : MonoBehaviour
 {
 
-    public Rigidbody2D playerRB;
-    public Transform aimingPivot;
-    public Vector2 movement;
+    private Rigidbody2D playerRB;
+    private Transform aimingPivot;
+    private Vector2 movement;
+    private Transform firePoint;
+    private int currentAmmo = 6;
+    private double fireCooldown = 0;
+    private double reloading = 0;
+    public Bullet projectile;
     public float moveSpeed = 20f;
     public float maxSpeed = 12f;
+    public double fireRate = 0.5f;
+    public double reloadTime = 0.5f;
+    public double health = 10;
+    public double damage = 5;
+    public int maxAmmo = 6;
 
     //jump variables
     [Range(1,20)]
@@ -24,6 +34,8 @@ public class Movement : MonoBehaviour
     void Start()
     {
         playerRB = GetComponent<Rigidbody2D>();
+        aimingPivot = this.transform.Find("PivotPoint");
+        firePoint = aimingPivot.transform.Find("ShootPoint");
     }
 
     // Update is called once per frame
@@ -78,7 +90,22 @@ public class Movement : MonoBehaviour
             }
         }
 
-        
+        //Control Shooting
+        if (Input.GetButtonDown("Fire1") && currentAmmo!=0 && Time.time >= fireCooldown && Time.time >= reloading)
+        {
+            Bullet boolet = Instantiate(projectile, firePoint.position, firePoint.rotation);
+            boolet.damage = damage;
+            fireCooldown = Time.time + fireRate;
+            currentAmmo--;
+        }
+
+        //Reload
+        if(Input.GetKeyDown("r"))
+        {
+            aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            currentAmmo = maxAmmo;
+            reloading = Time.time + reloadTime;
+        }
     }
 
     void FixedUpdate()
@@ -92,23 +119,25 @@ public class Movement : MonoBehaviour
         }
 
         //Control Aiming
-        Vector3 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - aimingPivot.transform.position;
-        direction.Normalize();
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 80f;
-        //Debug.Log("Angle:" + angle);
-        if ((angle > 182f || angle < -1) && FacingRight)
+        if (Time.time >= reloading)
         {
-            flip();
+            Vector3 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - aimingPivot.transform.position;
+            direction.Normalize();
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 80f;
+            //Debug.Log("Angle:" + angle);
+            if ((angle > 182f || angle < -1) && FacingRight)
+            {
+                flip();
+            }
+            else if ((angle < 178f && angle > 1) && !FacingRight)
+            {
+                flip();
+            }
+            if (FacingRight)
+                aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+            else
+                aimingPivot.transform.rotation = Quaternion.Euler(0f, 180f, -angle - 20f);
         }
-        else if ((angle < 178f && angle > 1) && !FacingRight)
-        {
-            flip();
-        }
-        if(FacingRight)
-            aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, angle);
-        else
-            aimingPivot.transform.rotation = Quaternion.Euler(0f, 180f, -angle - 20f);
-
     }
 
     void flip()
@@ -125,6 +154,13 @@ public class Movement : MonoBehaviour
     void Jump()
     {
         playerRB.velocity += Vector2.up * jumpVelocity;
+    }
+
+    public void TakeDamage(double damage)
+    {
+        health -= damage;
+        if (health <= 0)
+            Destroy(gameObject);
     }
 
     private bool IsGrounded()

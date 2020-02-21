@@ -8,32 +8,43 @@ public class EnemyAI : MonoBehaviour
     public EnemyBullet bullet;
     public Transform FirePoint;
     public Transform aimingPivot;
+    public Transform groundDetection;
+    public bool moveRight = true;
+    public double maxMoveDistance = 10f;
     public double fireRate = 5;
+    public double health = 10;
     public double damage = 1;
+    public float speed = 2f;
     public float viewingDistance = 20f;
+    private Rigidbody2D rb;
+    private double currentDistance;
     private bool canSeePlayer = false;
     private double fireCooldown = 0;
     private bool FacingRight = true;
+    private SpriteRenderer sr;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
+        currentDistance = 0;
+        Physics2D.queriesStartInColliders = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
         Vector3 direction = player.transform.position - aimingPivot.transform.position;
         direction.Normalize();
+        //Check if player is within enemy's vieing distance
         if (Vector2.Distance(transform.position, player.transform.position) <= viewingDistance)
         {
+            //Check if enemy can see the player
             RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, viewingDistance);
-            Debug.Log(hit.collider);
             if (hit.collider != null && hit.collider.gameObject.tag == "Player")
             {
-                Debug.Log("See player");
+                canSeePlayer = true;
                 //Control Aiming
 
 
@@ -58,11 +69,29 @@ public class EnemyAI : MonoBehaviour
                     fireCooldown = Time.time + fireRate;
                 }
             }
-
+        }
+        if(!canSeePlayer)
+        {
+            currentDistance += Vector2.right.x * speed * Time.deltaTime;
+            transform.Translate(Vector2.right * speed * Time.deltaTime);
+            RaycastHit2D groundInfo = Physics2D.Raycast(groundDetection.position,Vector2.down, sr.bounds.size.y+1f);
+            if (groundInfo.collider == null || groundInfo.collider.tag != "Ground" || currentDistance>=maxMoveDistance)
+            {
+                flip();
+                currentDistance = 0;
+                moveRight = !moveRight;
+            }
         }
     }
 
-    public void Shooting()
+    public void TakeDamage(double damage)
+    {
+        health -= damage;
+        if (health <= 0)
+            Destroy(gameObject);
+    }
+
+    void Shooting()
     {
             EnemyBullet boolet = Instantiate(bullet, FirePoint.position, FirePoint.rotation);
             boolet.damage = damage;

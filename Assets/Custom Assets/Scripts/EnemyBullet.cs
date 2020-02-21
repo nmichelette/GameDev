@@ -22,13 +22,12 @@ public class EnemyBullet : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ground")
         {
-            Debug.Log("Player shot a wall like a dumb");
             Destroy(this.gameObject); //Remove Boolet
         }
 
-        if (collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "Player")
         {
-            Debug.Log("ENEMY HIT");
+            Debug.Log("Enemy hit Player");
             collision.gameObject.SendMessage("TakeDamage", damage);
             Destroy(this.gameObject); //Remove Boolet
         }
