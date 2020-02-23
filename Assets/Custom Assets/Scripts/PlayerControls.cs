@@ -5,14 +5,6 @@ using UnityEngine;
 
 public class PlayerControls : MonoBehaviour
 {
-
-    private Rigidbody2D playerRB;
-    private Transform aimingPivot;
-    private Vector2 movement;
-    private Transform firePoint;
-    private int currentAmmo = 6;
-    private double fireCooldown = 0;
-    private double reloading = 0;
     public Bullet projectile;
     public float moveSpeed = 20f;
     public float maxSpeed = 12f;
@@ -21,6 +13,13 @@ public class PlayerControls : MonoBehaviour
     public double health = 10;
     public double damage = 5;
     public int maxAmmo = 6;
+    public int currentAmmo = 6;
+    private Rigidbody2D playerRB;
+    private Transform aimingPivot;
+    private Vector2 movement;
+    private Transform firePoint;  
+    private double fireCooldown = 0;
+    private double reloading = 0;
 
     //jump variables
     [Range(1,20)]

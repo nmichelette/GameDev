@@ -103,7 +103,7 @@ MonoBehaviour:
   groundDetection: {fileID: 8427887983718490186}
   moveRight: 1
   maxMoveDistance: 10
-  fireRate: 5
+  fireRate: 1.5
   health: 10
   damage: 1
   speed: 2

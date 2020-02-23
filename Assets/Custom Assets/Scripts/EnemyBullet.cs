@@ -24,7 +24,12 @@ public class EnemyBullet : MonoBehaviour
         {
             Destroy(this.gameObject); //Remove Boolet
         }
-
+        if (collision.gameObject.tag == "Enemy")
+        {
+            Debug.Log("Enemy hit another enemy!");
+            collision.gameObject.SendMessage("TakeDamage", damage);
+            Destroy(this.gameObject); //Remove Boolet
+        }
         if (collision.gameObject.tag == "Player")
         {
             Debug.Log("Enemy hit Player");

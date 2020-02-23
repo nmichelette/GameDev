@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+public class MeleeAI : MonoBehaviour
 {
-    
-    public EnemyBullet bullet;
-    public Transform FirePoint;
-    public Transform aimingPivot;
+
     public Transform groundDetection;
+    public Transform hitbox;
     public bool moveRight = true;
     public double maxMoveDistance = 10f;
-    public double fireRate = 5;
+    public double fireRate = 0.5f;
     public double health = 10;
     public double damage = 1;
     public float speed = 2f;
@@ -39,34 +37,21 @@ public class EnemyAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 direction = player.transform.position - aimingPivot.transform.position;
-        direction.Normalize();
+        
         //Check if player is within enemy's vieing distance
         if (Vector2.Distance(transform.position, player.transform.position) <= viewingDistance)
         {
+            Vector3 direction = player.transform.position - transform.position;
             //Check if enemy can see the player
             RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, viewingDistance);
             if (hit.collider != null && hit.collider.gameObject.tag == "Player")
             {
-                canSeePlayer = true;
-                //Control Aiming
-
-
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                //Debug.Log("Angle:" + angle);
-                if ((angle > -89 && angle < 89) && !FacingRight)
-                {
+                if (!FacingRight && direction.x > 0)
                     flip();
-                }
-                else if ((angle > 91f || angle < -91) && FacingRight)
-                {
-                    flip();
-                }
-                if (FacingRight)
-                    aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, angle);
                 else
-                    aimingPivot.transform.rotation = Quaternion.Euler(180f, 0f, -angle);
-
+                if (FacingRight && direction.x < 0)
+                    flip();
+                canSeePlayer = true;
                 if (Time.time >= fireCooldown)
                 {
                     Shooting();
@@ -76,7 +61,7 @@ public class EnemyAI : MonoBehaviour
             else
             {
                 if (canSeePlayer)
-                { 
+                {
                     moveTimer = Time.time + 2f;
                     help = true;
                 }
@@ -85,29 +70,41 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            if(canSeePlayer)
+            if (canSeePlayer)
             {
                 moveTimer = Time.time + 2f;
                 help = true;
             }
             canSeePlayer = false;
         }
-        if(!canSeePlayer && Time.time >= moveTimer)
+        if (!canSeePlayer && Time.time >= moveTimer)
         {
-            if(help)
-            { 
-                aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            if (help)
+            {
                 help = false;
             }
             currentDistance += Vector2.right.x * speed * Time.deltaTime;
             transform.Translate(Vector2.right * speed * Time.deltaTime);
-            RaycastHit2D groundInfo = Physics2D.Raycast(groundDetection.position,Vector2.down, sr.bounds.size.y+1f);
-            if (groundInfo.collider == null || groundInfo.collider.tag != "Ground" || currentDistance>=maxMoveDistance)
+            RaycastHit2D groundInfo = Physics2D.Raycast(groundDetection.position, Vector2.down, sr.bounds.size.y + 1f);
+            if (groundInfo.collider == null || groundInfo.collider.tag != "Ground" || currentDistance >= maxMoveDistance)
             {
                 flip();
                 currentDistance = 0;
                 moveRight = !moveRight;
             }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (Time.time >= fireCooldown)
+        {
+            if (collision.gameObject.tag == "Player")
+            {
+                Debug.Log("Melee Hit Enemy");
+                collision.gameObject.SendMessage("TakeDamage", damage);
+            }
+            fireCooldown = Time.time + fireRate;
         }
     }
 
@@ -120,8 +117,9 @@ public class EnemyAI : MonoBehaviour
 
     void Shooting()
     {
-            EnemyBullet boolet = Instantiate(bullet, FirePoint.position, FirePoint.rotation);
-            boolet.damage = damage;
+        //hitbox.Translate(Vector2.right*3);
+        //hitbox.Translate(Vector2.left / 3);
+        //fireCooldown = Time.time + fireRate;
     }
 
     void flip()

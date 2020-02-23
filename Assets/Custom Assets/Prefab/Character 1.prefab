@@ -72,7 +72,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3931798753580350861}
   - component: {fileID: 3931798753580350860}
-  - component: {fileID: 7961083773532976128}
   m_Layer: 2
   m_Name: Right Foot
   m_TagString: Untagged
@@ -143,32 +142,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &7961083773532976128
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3931798753580350862}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.10999999}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.75}
-    oldSize: {x: 0.28, y: 0.44}
-    newSize: {x: 0.28, y: 0.44}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.28, y: 0.44}
-  m_EdgeRadius: 0
 --- !u!1 &3931798753763648128
 GameObject:
   m_ObjectHideFlags: 0
@@ -261,7 +234,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3931798753870495380}
   - component: {fileID: 3931798753870495387}
-  - component: {fileID: 7961083773802484591}
   m_Layer: 2
   m_Name: Left Foot
   m_TagString: Untagged
@@ -332,32 +304,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &7961083773802484591
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3931798753870495381}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.10999999}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.75}
-    oldSize: {x: 0.28, y: 0.44}
-    newSize: {x: 0.28, y: 0.44}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.28, y: 0.44}
-  m_EdgeRadius: 0
 --- !u!1 &3931798753935601584
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,10 +779,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectile: {fileID: 2957692703661706832, guid: db2c6c7e224943043a99cdbe29340ac8,
     type: 3}
-  damage: 5
   moveSpeed: 100
   maxSpeed: 12
+  fireRate: 0.5
+  reloadTime: 0.5
   health: 10
+  damage: 5
+  maxAmmo: 6
+  currentAmmo: 6
   jumpVelocity: 11.5
   fallM: 2.5
   lowJumpM: 15
@@ -853,7 +803,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.062467694, y: 0.026746988}
+  m_Offset: {x: -0.062467694, y: -0.07132423}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -864,7 +814,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.2855661, y: 1.267467}
+  m_Size: {x: 1.2855661, y: 1.4636095}
   m_EdgeRadius: 0
 --- !u!1 &3931798755664352264
 GameObject:
