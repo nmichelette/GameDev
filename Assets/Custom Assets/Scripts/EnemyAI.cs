@@ -48,17 +48,18 @@ public class EnemyAI : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, viewingDistance);
             if (hit.collider != null && hit.collider.gameObject.tag == "Player")
             {
+<<<<<<< HEAD
                 canSeePlayer = true;
+=======
+>>>>>>> 9c2e11d43beca7a4f827f372492a46f7ccde04d3
                 //Control Aiming
-
-
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                 //Debug.Log("Angle:" + angle);
-                if ((angle > -89 && angle < 89) && !FacingRight)
+                if ((angle > -88 && angle < 88) && !FacingRight)
                 {
                     flip();
                 }
-                else if ((angle > 91f || angle < -91) && FacingRight)
+                else if ((angle > 92f || angle < -92) && FacingRight)
                 {
                     flip();
                 }
