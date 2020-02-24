@@ -14,18 +14,22 @@ public class PlayerControls : MonoBehaviour
     public double damage = 5;
     public int maxAmmo = 6;
     public int currentAmmo = 6;
+    public float maxAirSpeed = 10f;
+    public float decel = 50f;   //higher numbers make you decelerate slower
     private Rigidbody2D playerRB;
     private Transform aimingPivot;
     private Vector2 movement;
     private Transform firePoint;  
     private double fireCooldown = 0;
     private double reloading = 0;
+    private bool onGround = false;
 
     //jump variables
     [Range(1,20)]
     public float jumpVelocity;
     public float fallM = 2.5f;
     public float lowJumpM = 7.5f;
+    private float jumpTimer = 0;
 
     private bool FacingRight = true;
 
@@ -40,7 +44,9 @@ public class PlayerControls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        onGround = IsGrounded();
         float dir = Input.GetAxis("Horizontal");
+
         //checks if the x velocity is within certain parameters
         if (!Input.GetButton("Horizontal"))
         {
@@ -52,32 +58,45 @@ public class PlayerControls : MonoBehaviour
             if ((vx < 1 && vx > 0) || (vx > -1 && vx < 0))
                 playerRB.velocity = new Vector2(0, playerRB.velocity.y);
             else
-            {
-                playerRB.velocity = new Vector2(vx * .9f, playerRB.velocity.y);
-                
-            }
-                
+                playerRB.velocity = new Vector2(vx * decel * Time.deltaTime, playerRB.velocity.y);
         }
         else
         {
             //accelerating
-            if (playerRB.velocity.x < maxSpeed && playerRB.velocity.x > -maxSpeed)
+            if (onGround)
             {
-                movement = new Vector2(dir, 0f); //gives direction     
+                if (playerRB.velocity.x < maxSpeed && playerRB.velocity.x > -maxSpeed)
+                {
+                    movement = new Vector2(dir, 0f); //gives direction     
+                }
+                else
+                {
+                    playerRB.velocity = new Vector2(maxSpeed * dir, playerRB.velocity.y);
+                }
             }
             else
-            {
-                playerRB.velocity = new Vector2(maxSpeed * dir, playerRB.velocity.y);
+            {   //air acceleration
+                if (playerRB.velocity.x < maxAirSpeed && playerRB.velocity.x > -maxAirSpeed)
+                {
+                    movement = new Vector2(dir, 0f); //gives direction     
+                }
+                else
+                {
+                    playerRB.velocity = new Vector2(maxAirSpeed * dir, playerRB.velocity.y);
+                }
             }
-           /* if (dir > 0 && !FacingRight) //going right
-                flip();
-            else if (dir < 0 && FacingRight)
-                flip(); */
 
         }
 
+        //jump
+        if (Time.time > jumpTimer && (Input.GetButtonDown("Jump") && onGround))
+        {
+            Jump();
+            jumpTimer = Time.time + .25f;
+        }
+
         //hold jump to go further
-        if (!IsGrounded())
+        if (!onGround)
         {
             if (playerRB.velocity.y < 0)
             {
@@ -99,9 +118,12 @@ public class PlayerControls : MonoBehaviour
         }
 
         //Reload
-        if(Input.GetKeyDown("r"))
+        if(Input.GetButtonDown("Reload"))
         {
-            aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            if(FacingRight)
+                aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, -40f);
+            else
+                aimingPivot.transform.rotation = Quaternion.Euler(180f, 0f, 140f);
             currentAmmo = maxAmmo;
             reloading = Time.time + reloadTime;
         }
@@ -111,31 +133,26 @@ public class PlayerControls : MonoBehaviour
     {
         //move
         moveCharacter(movement);
-        //jump
-        if (Input.GetButtonDown("Jump") && IsGrounded())
-        {
-            Jump();
-        }
-
+        
         //Control Aiming
         if (Time.time >= reloading)
         {
             Vector3 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - aimingPivot.transform.position;
             direction.Normalize();
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 80f;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             //Debug.Log("Angle:" + angle);
-            if ((angle > 182f || angle < -1) && FacingRight)
+            if ((angle > -88 && angle < 88) && !FacingRight)
             {
                 flip();
             }
-            else if ((angle < 178f && angle > 1) && !FacingRight)
+            else if ((angle > 92f || angle < -92) && FacingRight)
             {
                 flip();
             }
             if (FacingRight)
                 aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, angle);
             else
-                aimingPivot.transform.rotation = Quaternion.Euler(0f, 180f, -angle - 20f);
+                aimingPivot.transform.rotation = Quaternion.Euler(180f, 0f, -angle);
         }
     }
 
@@ -164,6 +181,8 @@ public class PlayerControls : MonoBehaviour
 
     private bool IsGrounded()
     {
-        return Physics2D.Raycast(playerRB.position, Vector3.down, 1.25f);
+        return Physics2D.Raycast(playerRB.position, Vector3.down, 1.25f, LayerMask.GetMask("Ground")) ||
+              (Physics2D.Raycast(playerRB.position + new Vector2(.5f, 0), Vector3.down, 1.25f, LayerMask.GetMask("Ground")) ||
+               Physics2D.Raycast(playerRB.position + new Vector2(-.5f, 0), Vector3.down, 1.25f, LayerMask.GetMask("Ground")));
     }
 }

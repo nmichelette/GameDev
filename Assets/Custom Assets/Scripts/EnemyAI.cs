@@ -54,11 +54,11 @@ public class EnemyAI : MonoBehaviour
 
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                 //Debug.Log("Angle:" + angle);
-                if ((angle > -89 && angle < 89) && !FacingRight)
+                if ((angle > -88 && angle < 88) && !FacingRight)
                 {
                     flip();
                 }
-                else if ((angle > 91f || angle < -91) && FacingRight)
+                else if ((angle > 92f || angle < -92) && FacingRight)
                 {
                     flip();
                 }
