@@ -46,12 +46,13 @@ public class MeleeAI : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, viewingDistance);
             if (hit.collider != null && hit.collider.gameObject.tag == "Player")
             {
+                canSeePlayer = true;
                 if (!FacingRight && direction.x > 0)
                     flip();
                 else
                 if (FacingRight && direction.x < 0)
                     flip();
-                canSeePlayer = true;
+
                 if (Time.time >= fireCooldown)
                 {
                     Shooting();
@@ -85,8 +86,7 @@ public class MeleeAI : MonoBehaviour
             }
             currentDistance += Vector2.right.x * speed * Time.deltaTime;
             transform.Translate(Vector2.right * speed * Time.deltaTime);
-            RaycastHit2D groundInfo = Physics2D.Raycast(groundDetection.position, Vector2.down, sr.bounds.size.y + 1f);
-            if (groundInfo.collider == null || groundInfo.collider.tag != "Ground" || currentDistance >= maxMoveDistance)
+            if (!Physics2D.Raycast(groundDetection.position, Vector2.down, sr.bounds.size.y + 1f, LayerMask.GetMask("Ground")) || currentDistance >= maxMoveDistance)
             {
                 flip();
                 currentDistance = 0;

@@ -95,14 +95,16 @@ public class EnemyAI : MonoBehaviour
         if(!canSeePlayer && Time.time >= moveTimer)
         {
             if(help)
-            { 
-                aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            {
+                if(FacingRight)
+                    aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+                else
+                    aimingPivot.transform.rotation = Quaternion.Euler(180f, 0f, 180f);
                 help = false;
             }
             currentDistance += Vector2.right.x * speed * Time.deltaTime;
             transform.Translate(Vector2.right * speed * Time.deltaTime);
-            RaycastHit2D groundInfo = Physics2D.Raycast(groundDetection.position,Vector2.down, sr.bounds.size.y+1f);
-            if (groundInfo.collider == null || groundInfo.collider.tag != "Ground" || currentDistance>=maxMoveDistance)
+            if (!Physics2D.Raycast(groundDetection.position, Vector2.down, sr.bounds.size.y + 1f, LayerMask.GetMask("Ground")) || currentDistance>=maxMoveDistance)
             {
                 flip();
                 currentDistance = 0;
