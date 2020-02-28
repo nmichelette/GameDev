@@ -5,23 +5,14 @@ using UnityEngine;
 
 public class PlayerControls : MonoBehaviour
 {
-    public Bullet projectile;
     public float moveSpeed = 20f;
     public float maxSpeed = 12f;
-    public double fireRate = 0.5f;
-    public double reloadTime = 0.5f;
     public double health = 10;
-    public double damage = 5;
-    public int maxAmmo = 6;
-    public int currentAmmo = 6;
     public float maxAirSpeed = 10f;
     public float decel = 50f;   //higher numbers make you decelerate slower
+    public Gun currentWeapon;
     private Rigidbody2D playerRB;
-    private Transform aimingPivot;
     private Vector2 movement;
-    private Transform firePoint;  
-    private double fireCooldown = 0;
-    private double reloading = 0;
     private bool onGround = false;
 
     //jump variables
@@ -33,12 +24,9 @@ public class PlayerControls : MonoBehaviour
 
     private bool FacingRight = true;
 
-
     void Start()
     {
         playerRB = GetComponent<Rigidbody2D>();
-        aimingPivot = this.transform.Find("PivotPoint");
-        firePoint = aimingPivot.transform.Find("ShootPoint");
     }
 
     // Update is called once per frame
@@ -109,23 +97,19 @@ public class PlayerControls : MonoBehaviour
         }
 
         //Control Shooting
-        if (Input.GetButtonDown("Fire1") && currentAmmo!=0 && Time.time >= fireCooldown && Time.time >= reloading)
+        if (Input.GetButtonDown("Fire1") && currentWeapon.CanFire())
         {
-            Bullet boolet = Instantiate(projectile, firePoint.position, firePoint.rotation);
-            boolet.damage = damage;
-            fireCooldown = Time.time + fireRate;
-            currentAmmo--;
+            currentWeapon.Fire();
         }
 
         //Reload
         if(Input.GetButtonDown("Reload"))
         {
             if(FacingRight)
-                aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, -40f);
+                currentWeapon.transform.rotation = Quaternion.Euler(0f, 0f, -40f);
             else
-                aimingPivot.transform.rotation = Quaternion.Euler(180f, 0f, 140f);
-            currentAmmo = maxAmmo;
-            reloading = Time.time + reloadTime;
+                currentWeapon.transform.rotation = Quaternion.Euler(180f, 0f, 140f);
+            currentWeapon.Reload();
         }
     }
 
@@ -135,9 +119,9 @@ public class PlayerControls : MonoBehaviour
         moveCharacter(movement);
         
         //Control Aiming
-        if (Time.time >= reloading)
+        if (!currentWeapon.isReloading())
         {
-            Vector3 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - aimingPivot.transform.position;
+            Vector3 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - currentWeapon.transform.position;
             direction.Normalize();
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             //Debug.Log("Angle:" + angle);
@@ -150,9 +134,9 @@ public class PlayerControls : MonoBehaviour
                 flip();
             }
             if (FacingRight)
-                aimingPivot.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+                currentWeapon.transform.rotation = Quaternion.Euler(0f, 0f, angle);
             else
-                aimingPivot.transform.rotation = Quaternion.Euler(180f, 0f, -angle);
+                currentWeapon.transform.rotation = Quaternion.Euler(180f, 0f, -angle);
         }
     }
 
