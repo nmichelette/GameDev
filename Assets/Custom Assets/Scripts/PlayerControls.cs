@@ -11,6 +11,7 @@ public class PlayerControls : MonoBehaviour
     public float maxAirSpeed = 10f;
     public float decel = 50f;   //higher numbers make you decelerate slower
     public Gun currentWeapon;
+    public Animator bodyAnimator;
     private Rigidbody2D playerRB;
     private Vector2 movement;
     private bool onGround = false;
@@ -34,7 +35,7 @@ public class PlayerControls : MonoBehaviour
     {
         onGround = IsGrounded();
         float dir = Input.GetAxis("Horizontal");
-
+        bodyAnimator.SetFloat("Speed",Mathf.Abs(movement.x)); 
         //checks if the x velocity is within certain parameters
         if (!Input.GetButton("Horizontal"))
         {
@@ -165,7 +166,8 @@ public class PlayerControls : MonoBehaviour
 
     private bool IsGrounded()
     {
-        return Physics2D.Raycast(playerRB.position, Vector3.down, 1.25f, LayerMask.GetMask("Ground")) ||
+        //Need to get a better way to check below player, probably just playerheight/2+1
+        return Physics2D.Raycast(playerRB.position, Vector3.down, 3f, LayerMask.GetMask("Ground")) ||
               (Physics2D.Raycast(playerRB.position + new Vector2(.5f, 0), Vector3.down, 1.25f, LayerMask.GetMask("Ground")) ||
                Physics2D.Raycast(playerRB.position + new Vector2(-.5f, 0), Vector3.down, 1.25f, LayerMask.GetMask("Ground")));
     }

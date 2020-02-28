@@ -74,7 +74,8 @@ MonoBehaviour:
   maxAirSpeed: 10
   decel: 50
   currentWeapon: {fileID: 701346044630804931}
-  jumpVelocity: 5
+  bodyAnimator: {fileID: 3041181908512571244}
+  jumpVelocity: 10
   fallM: 2.5
   lowJumpM: 7.5
 --- !u!61 &1222105504482946466
@@ -113,6 +114,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6725888917506448845}
   - component: {fileID: 1568606366238693956}
+  - component: {fileID: 3041181908512571244}
   m_Layer: 0
   m_Name: Test_Body
   m_TagString: Untagged
@@ -184,6 +186,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &3041181908512571244
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5720302804818475233}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c7c9f546b5ec79e4daa9d987f85fcced, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6701282076609667772
 GameObject:
   m_ObjectHideFlags: 0
