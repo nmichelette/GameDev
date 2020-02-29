@@ -12,8 +12,8 @@ public class Gun : MonoBehaviour
     public Transform aimingPivot;
     public Transform firePoint;
     public Bullet projectile;
-    private double reloading;
-    private double fireCooldown;
+    public double reloading;
+    public double fireCooldown;
 
     public double getFireRate() { return fireRate; }
     public double getReloadTime() { return reloadTime; }
@@ -32,7 +32,7 @@ public class Gun : MonoBehaviour
         if (currentAmmo > maxAmmo)
             currentAmmo = maxAmmo;
     }
-    public void Fire()
+    public virtual void Fire()
     {
         Bullet boolet = Instantiate(projectile, firePoint.position, firePoint.rotation);
         boolet.damage = damage;

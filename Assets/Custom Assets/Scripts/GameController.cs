@@ -20,7 +20,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentAmmoText.text = playerControls.currentWeapon.getCurrentAmmo().ToString();
-        maxAmmoText.text = playerControls.currentWeapon.getMaxAmmo().ToString();
+        currentAmmoText.text = playerControls.Armory[playerControls.currentWeapon].getCurrentAmmo().ToString();
+        maxAmmoText.text = playerControls.Armory[playerControls.currentWeapon].getMaxAmmo().ToString();
     }
 }

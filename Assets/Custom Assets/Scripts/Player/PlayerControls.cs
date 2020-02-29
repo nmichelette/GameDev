@@ -10,7 +10,8 @@ public class PlayerControls : MonoBehaviour
     public double health = 10;
     public float maxAirSpeed = 10f;
     public float decel = 50f;   //higher numbers make you decelerate slower
-    public Gun currentWeapon;
+    public Gun[] Armory;
+    public int currentWeapon;
     public Animator bodyAnimator;
     private Rigidbody2D playerRB;
     private Vector2 movement;
@@ -28,6 +29,8 @@ public class PlayerControls : MonoBehaviour
     void Start()
     {
         playerRB = GetComponent<Rigidbody2D>();
+        currentWeapon = 0;
+        switchWeapons();
     }
 
     // Update is called once per frame
@@ -98,19 +101,28 @@ public class PlayerControls : MonoBehaviour
         }
 
         //Control Shooting
-        if (Input.GetButtonDown("Fire1") && currentWeapon.CanFire())
+        if (Input.GetButtonDown("Fire1") && Armory[currentWeapon].CanFire())
         {
-            currentWeapon.Fire();
+            Armory[currentWeapon].Fire();
         }
 
         //Reload
         if(Input.GetButtonDown("Reload"))
         {
             if(FacingRight)
-                currentWeapon.transform.rotation = Quaternion.Euler(0f, 0f, -40f);
+                Armory[currentWeapon].transform.rotation = Quaternion.Euler(0f, 0f, -40f);
             else
-                currentWeapon.transform.rotation = Quaternion.Euler(180f, 0f, 140f);
-            currentWeapon.Reload();
+                Armory[currentWeapon].transform.rotation = Quaternion.Euler(180f, 0f, 140f);
+            Armory[currentWeapon].Reload();
+        }
+        //Switch Weapons, brute force method
+        if(Input.GetKeyDown("q"))
+        {
+            if (currentWeapon == 0)
+                currentWeapon = 1;
+            else
+                currentWeapon = 0;
+            switchWeapons();
         }
     }
 
@@ -120,9 +132,9 @@ public class PlayerControls : MonoBehaviour
         moveCharacter(movement);
         
         //Control Aiming
-        if (!currentWeapon.isReloading())
+        if (!Armory[currentWeapon].isReloading())
         {
-            Vector3 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - currentWeapon.transform.position;
+            Vector3 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - Armory[currentWeapon].transform.position;
             direction.Normalize();
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             //Debug.Log("Angle:" + angle);
@@ -135,9 +147,9 @@ public class PlayerControls : MonoBehaviour
                 flip();
             }
             if (FacingRight)
-                currentWeapon.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+                Armory[currentWeapon].transform.rotation = Quaternion.Euler(0f, 0f, angle);
             else
-                currentWeapon.transform.rotation = Quaternion.Euler(180f, 0f, -angle);
+                Armory[currentWeapon].transform.rotation = Quaternion.Euler(180f, 0f, -angle);
         }
     }
 
@@ -162,6 +174,20 @@ public class PlayerControls : MonoBehaviour
         health -= damage;
         if (health <= 0)
             Destroy(gameObject);
+    }
+
+    private void switchWeapons()
+    {
+        if(currentWeapon == 0)
+        {
+            Armory[0].gameObject.SetActive(true);
+            Armory[1].gameObject.SetActive(false);
+        }
+        else
+        {
+            Armory[0].gameObject.SetActive(false);
+            Armory[1].gameObject.SetActive(true);
+        }
     }
 
     private bool IsGrounded()
