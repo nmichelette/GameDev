@@ -5,25 +5,32 @@ using UnityEngine;
 
 public class PlayerControls : MonoBehaviour
 {
+    //movement
     public float moveSpeed = 20f;
+    public float airMoveSpeed = 15f;
     public float maxSpeed = 12f;
-    public double health = 10;
     public float maxAirSpeed = 10f;
-    public float decel = 50f;   //higher numbers make you decelerate slower
-    public Gun[] Armory;
-    public int currentWeapon;
-    public Animator bodyAnimator;
-    private Rigidbody2D playerRB;
+    [Range(0, .5f)]
+    public float decel = .25f;
+    [Range(0, .5f)]
+    public float airDecel = .25f;
+
     private Vector2 movement;
+    private Rigidbody2D playerRB;
     private bool onGround = false;
 
     //jump variables
-    [Range(1,20)]
     public float jumpVelocity;
     public float fallM = 2.5f;
     public float lowJumpM = 7.5f;
     private float jumpTimer = 0;
 
+    //combat
+    public Gun[] Armory;
+    public int currentWeapon;
+
+    //animation
+    public Animator bodyAnimator;
     private bool FacingRight = true;
 
     void Start()
@@ -37,51 +44,25 @@ public class PlayerControls : MonoBehaviour
     void Update()
     {
         onGround = IsGrounded();
-        float dir = Input.GetAxis("Horizontal");
-        bodyAnimator.SetFloat("Speed",Mathf.Abs(movement.x)); 
-        //checks if the x velocity is within certain parameters
-        if (!Input.GetButton("Horizontal"))
-        {
-            //decelerating
-            float vx = playerRB.velocity.x;
+        float dir = Input.GetAxisRaw("Horizontal");
+        bodyAnimator.SetFloat("Speed", Mathf.Abs(movement.x));
 
+        //checks if the x velocity is within certain parameters
+        if (Input.GetButton("Horizontal"))
+        {
+            //accelerate
+            movement = new Vector2(dir, 0f); //gives direction
+            if (onGround)
+                playerRB.velocity = new Vector2(Mathf.Clamp(playerRB.velocity.x, -maxSpeed, maxSpeed), playerRB.velocity.y);
+            else
+                playerRB.velocity = new Vector2(Mathf.Clamp(playerRB.velocity.x, -maxAirSpeed, maxAirSpeed), playerRB.velocity.y);
+        }
+        else //stops all forces
             movement = new Vector2(0f, 0f);
 
-            if ((vx < 1 && vx > 0) || (vx > -1 && vx < 0))
-                playerRB.velocity = new Vector2(0, playerRB.velocity.y);
-            else
-                playerRB.velocity = new Vector2(vx * decel * Time.deltaTime, playerRB.velocity.y);
-        }
-        else
-        {
-            //accelerating
-            if (onGround)
-            {
-                if (playerRB.velocity.x < maxSpeed && playerRB.velocity.x > -maxSpeed)
-                {
-                    movement = new Vector2(dir, 0f); //gives direction     
-                }
-                else
-                {
-                    playerRB.velocity = new Vector2(maxSpeed * dir, playerRB.velocity.y);
-                }
-            }
-            else
-            {   //air acceleration
-                if (playerRB.velocity.x < maxAirSpeed && playerRB.velocity.x > -maxAirSpeed)
-                {
-                    movement = new Vector2(dir, 0f); //gives direction     
-                }
-                else
-                {
-                    playerRB.velocity = new Vector2(maxAirSpeed * dir, playerRB.velocity.y);
-                }
-            }
-
-        }
 
         //jump
-        if (Time.time > jumpTimer && (Input.GetButtonDown("Jump") && onGround))
+        if ((Input.GetButtonDown("Jump") && onGround) && Time.time > jumpTimer)
         {
             Jump();
             jumpTimer = Time.time + .25f;
@@ -90,7 +71,7 @@ public class PlayerControls : MonoBehaviour
         //hold jump to go further
         if (!onGround)
         {
-            if (playerRB.velocity.y < 0)
+            if (playerRB.velocity.y < 1)
             {
                 playerRB.velocity += Vector2.up * Physics2D.gravity.y * (fallM - 1) * Time.deltaTime;
             }
@@ -161,7 +142,21 @@ public class PlayerControls : MonoBehaviour
 
     void moveCharacter(Vector2 direction)
     {
-         playerRB.AddForce(direction * moveSpeed);
+        if (Mathf.Abs(direction.x) > 0)
+            playerRB.AddForce(direction * moveSpeed);
+        else
+        {
+            if (Mathf.Abs(playerRB.velocity.x) > .1)
+            {
+                if (onGround)
+                    playerRB.velocity = new Vector2(Mathf.Lerp(playerRB.velocity.x, 0, decel), playerRB.velocity.y);
+                else
+                    playerRB.velocity = new Vector2(Mathf.Lerp(playerRB.velocity.x, 0, airDecel), playerRB.velocity.y);
+            }
+            else
+                playerRB.velocity = new Vector2(0, playerRB.velocity.y);
+
+        }
     }
 
     void Jump()
@@ -169,12 +164,6 @@ public class PlayerControls : MonoBehaviour
         playerRB.velocity += Vector2.up * jumpVelocity;
     }
 
-    public void TakeDamage(double damage)
-    {
-        health -= damage;
-        if (health <= 0)
-            Destroy(gameObject);
-    }
 
     private void switchWeapons()
     {

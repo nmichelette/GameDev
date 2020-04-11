@@ -51,7 +51,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3.5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -69,19 +69,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9887d1da349e11444902d55161b5f5c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 20
+  moveSpeed: 40
+  airMoveSpeed: 15
   maxSpeed: 12
-  health: 10
   maxAirSpeed: 10
-  decel: 50
+  decel: 0.19
+  airDecel: 0.1
+  jumpVelocity: 20
+  fallM: 7
+  lowJumpM: 15
   Armory:
   - {fileID: 8132608942811352794}
   - {fileID: 6789988519756093166}
   currentWeapon: 0
   bodyAnimator: {fileID: 3041181908512571244}
-  jumpVelocity: 10.5
-  fallM: 2.5
-  lowJumpM: 7.5
 --- !u!61 &1222105504482946466
 BoxCollider2D:
   m_ObjectHideFlags: 0
